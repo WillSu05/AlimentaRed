@@ -28,4 +28,7 @@ public class Asignacion {
     @JoinColumn(name = "solicitud_id", nullable = false)
     private SolicitudDonacion solicitud;
 
+    @OneToOne(mappedBy = "asignacion", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Entrega entrega;
+
 }
