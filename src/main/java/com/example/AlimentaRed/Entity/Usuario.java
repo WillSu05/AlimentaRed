@@ -27,6 +27,4 @@ public class Usuario {
     @Column(nullable = false)
     private String rol;
 
-    @OneToMany(mappedBy = "donante", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<LoteAlimento> lotesDonados;
 }
