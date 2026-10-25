@@ -1,4 +1,4 @@
-package com.example.AlimentaRed.Dto;
+package com.example.AlimentaRed.Dto.Request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

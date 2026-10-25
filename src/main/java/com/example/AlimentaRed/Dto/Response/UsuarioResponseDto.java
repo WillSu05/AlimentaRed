@@ -1,4 +1,4 @@
-package com.example.AlimentaRed.Dto;
+package com.example.AlimentaRed.Dto.Response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
