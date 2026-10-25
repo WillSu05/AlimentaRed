@@ -1,11 +1,17 @@
 package com.example.AlimentaRed.Entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
 @Entity
 @Table(name = "entrega")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Entrega {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

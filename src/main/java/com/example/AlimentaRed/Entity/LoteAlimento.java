@@ -1,12 +1,19 @@
 package com.example.AlimentaRed.Entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "lote_alimento")
-public class LoteAlimentos {
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class LoteAlimento {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -35,4 +42,6 @@ public class LoteAlimentos {
     @JoinColumn(name = "donante_id", nullable = false)
     private Usuario donante;
 
+    @OneToMany(mappedBy = "lote", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<SolicitudDonacion> solicitudes;
 }

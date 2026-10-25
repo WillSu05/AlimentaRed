@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Table(name = "usuario")
 @Data
@@ -26,5 +28,8 @@ public class Usuario {
 
     @Column(nullable = false)
     private String rol;
+
+    @OneToMany(mappedBy = "donante", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<LoteAlimento> lotesDonados;
 
 }
