@@ -18,7 +18,7 @@ public class SolicitudDonacionController {
         this.solicitudService = solicitudService;
     }
 
-    @PostMapping
+    @PostMapping("/crearSolicitud")
     public ResponseEntity<SolicitudDonacion> crearSolicitud(@RequestBody SolicitudDonacionRequestDto requestDto) {
         SolicitudDonacion nuevaSolicitud = solicitudService.crearSolicitud(requestDto);
         return new ResponseEntity<>(nuevaSolicitud, HttpStatus.CREATED);

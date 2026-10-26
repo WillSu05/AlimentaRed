@@ -18,17 +18,17 @@ public class CategoriaAlimentoController {
         this.categoriaService = categoriaService;
     }
 
-    @GetMapping
+    @GetMapping("/listarCategoria")
     public ResponseEntity<List<CategoriaAlimento>> listarCategorias() {
         return ResponseEntity.ok(categoriaService.listarCategorias());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/buscarCategoriaAlimento/{id}")
     public ResponseEntity<CategoriaAlimento> obtenerPorId(@PathVariable Long id) {
         return ResponseEntity.ok(categoriaService.obtenerPorId(id));
     }
 
-    @PostMapping
+    @PostMapping("/guardarCategoria")
     public ResponseEntity<CategoriaAlimento> guardarCategoria(@RequestBody CategoriaAlimento categoria) {
         CategoriaAlimento nuevaCategoria = categoriaService.guardarCategoria(categoria);
         return new ResponseEntity<>(nuevaCategoria, HttpStatus.CREATED);

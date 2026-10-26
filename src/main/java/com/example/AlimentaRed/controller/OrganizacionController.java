@@ -18,18 +18,18 @@ public class OrganizacionController {
         this.organizacionService = organizacionService;
     }
 
-    @PostMapping
+    @PostMapping("/registrarOrganizacion")
     public ResponseEntity<Organizacion> registrarOrganizacion(@RequestBody Organizacion organizacion) {
         Organizacion nuevaOrg = organizacionService.registrarOrganizacion(organizacion);
         return new ResponseEntity<>(nuevaOrg, HttpStatus.CREATED);
     }
 
-    @GetMapping
+    @GetMapping("/ListarOrganizacion")
     public ResponseEntity<List<Organizacion>> listarOrganizaciones() {
         return ResponseEntity.ok(organizacionService.listarOrganizaciones());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/buscarOrganizacion/{id}")
     public ResponseEntity<Organizacion> obtenerPorId(@PathVariable Long id) {
         return ResponseEntity.ok(organizacionService.obtenerPorId(id));
     }
