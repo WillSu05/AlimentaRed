@@ -2,7 +2,7 @@ package com.example.AlimentaRed.controller;
 
 import com.example.AlimentaRed.Dto.Request.ResolverSolicitudRequestDto;
 import com.example.AlimentaRed.Dto.Request.SolicitudDonacionRequestDto;
-import com.example.AlimentaRed.Entity.SolicitudDonacion;
+import com.example.AlimentaRed.Dto.Response.SolicitudDonacionResponseDto;
 import com.example.AlimentaRed.service.SolicitudDonacionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,14 +19,16 @@ public class SolicitudDonacionController {
     }
 
     @PostMapping("/crearSolicitud")
-    public ResponseEntity<SolicitudDonacion> crearSolicitud(@RequestBody SolicitudDonacionRequestDto requestDto) {
-        SolicitudDonacion nuevaSolicitud = solicitudService.crearSolicitud(requestDto);
+    public ResponseEntity<SolicitudDonacionResponseDto> crearSolicitud(@RequestBody SolicitudDonacionRequestDto requestDto) {
+        SolicitudDonacionResponseDto nuevaSolicitud = solicitudService.crearSolicitud(requestDto);
         return new ResponseEntity<>(nuevaSolicitud, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}/resolver")
-    public ResponseEntity<String> resolverSolicitud(@PathVariable Long id, @RequestBody ResolverSolicitudRequestDto requestDto) {
-        solicitudService.resolverSolicitud(id, requestDto);
-        return ResponseEntity.ok("Solicitud procesada correctamente con estado: " + requestDto.getEstado());
+    public ResponseEntity<SolicitudDonacionResponseDto> resolverSolicitud(
+            @PathVariable Long id,
+            @RequestBody ResolverSolicitudRequestDto requestDto) {
+        SolicitudDonacionResponseDto solicitudResuelta = solicitudService.resolverSolicitud(id, requestDto);
+        return ResponseEntity.ok(solicitudResuelta);
     }
 }
