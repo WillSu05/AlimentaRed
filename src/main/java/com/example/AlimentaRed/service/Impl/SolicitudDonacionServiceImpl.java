@@ -2,6 +2,7 @@ package com.example.AlimentaRed.service.Impl;
 
 import com.example.AlimentaRed.Dto.Request.ResolverSolicitudRequestDto;
 import com.example.AlimentaRed.Dto.Request.SolicitudDonacionRequestDto;
+import com.example.AlimentaRed.Dto.Response.SolicitudDonacionResponseDto;
 import com.example.AlimentaRed.Entity.Asignacion;
 import com.example.AlimentaRed.Entity.LoteAlimento;
 import com.example.AlimentaRed.Entity.Organizacion;
@@ -11,42 +12,34 @@ import com.example.AlimentaRed.repository.LoteAlimentoRepository;
 import com.example.AlimentaRed.repository.OrganizacionRepository;
 import com.example.AlimentaRed.repository.SolicitudDonacionRepository;
 import com.example.AlimentaRed.service.SolicitudDonacionService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Service
 public class SolicitudDonacionServiceImpl implements SolicitudDonacionService {
 
-    private final SolicitudDonacionRepository solicitudRepository;
-    private final LoteAlimentoRepository loteRepository;
-    private final OrganizacionRepository organizacionRepository;
-    private final AsignacionRepository asignacionRepository;
+    @Autowired
+    private SolicitudDonacionRepository solicitudRepository;
 
-    public SolicitudDonacionServiceImpl(SolicitudDonacionRepository solicitudRepository,
-                                        LoteAlimentoRepository loteRepository,
-                                        OrganizacionRepository organizacionRepository,
-                                        AsignacionRepository asignacionRepository) {
-        this.solicitudRepository = solicitudRepository;
-        this.loteRepository = loteRepository;
-        this.organizacionRepository = organizacionRepository;
-        this.asignacionRepository = asignacionRepository;
-    }
+    @Autowired
+    private LoteAlimentoRepository loteRepository;
+
+    @Autowired
+    private OrganizacionRepository organizacionRepository;
+
+    @Autowired
+    private AsignacionRepository asignacionRepository;
 
     @Override
     @Transactional
-    public SolicitudDonacion crearSolicitud(SolicitudDonacionRequestDto requestDto) {
+    public SolicitudDonacionResponseDto crearSolicitud(SolicitudDonacionRequestDto requestDto) {
+
         LoteAlimento lote = loteRepository.findById(requestDto.getLoteId())
                 .orElseThrow(() -> new RuntimeException("Lote no encontrado"));
-
-        if (!lote.getEstado().equals("DISPONIBLE") || lote.getFechaLimite().before(new Date())) {
-            throw new RuntimeException("El lote no está disponible o ha vencido");
-        }
-
-        if (requestDto.getCantidadSolicitada() > lote.getCantidad()) {
-            throw new RuntimeException("La cantidad solicitada supera la disponibilidad del lote");
-        }
 
         Organizacion organizacion = organizacionRepository.findById(requestDto.getOrganizacionId())
                 .orElseThrow(() -> new RuntimeException("Organización no encontrada"));
@@ -58,40 +51,72 @@ public class SolicitudDonacionServiceImpl implements SolicitudDonacionService {
         solicitud.setLote(lote);
         solicitud.setOrganizacion(organizacion);
 
-        return solicitudRepository.save(solicitud);
+        SolicitudDonacion guardada = solicitudRepository.save(solicitud);
+
+        return convertirADto(guardada);
     }
 
     @Override
     @Transactional
-    public void resolverSolicitud(Long solicitudId, ResolverSolicitudRequestDto requestDto) {
-        SolicitudDonacion solicitud = solicitudRepository.findById(solicitudId)
+    public SolicitudDonacionResponseDto resolverSolicitud(Long id, ResolverSolicitudRequestDto requestDto) {
+
+        SolicitudDonacion solicitud = solicitudRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Solicitud no encontrada"));
 
-        if (!solicitud.getEstado().equals("PENDIENTE")) {
-            throw new RuntimeException("La solicitud ya fue resuelta anteriormente");
-        }
+        if ("APROBADO".equalsIgnoreCase(requestDto.getEstado())) {
+            solicitud.setEstado("APROBADO");
 
-        solicitud.setEstado(requestDto.getEstado());
-        solicitudRepository.save(solicitud);
-
-        if (requestDto.getEstado().equals("APROBADO")) {
             LoteAlimento lote = solicitud.getLote();
 
-            if (solicitud.getCantidadSolicitada() > lote.getCantidad()) {
-                throw new RuntimeException("Stock insuficiente para aprobar esta solicitud");
+            if (lote.getCantidad() < solicitud.getCantidadSolicitada()) {
+                throw new RuntimeException("La cantidad solicitada supera el stock disponible del lote.");
             }
 
             lote.setCantidad(lote.getCantidad() - solicitud.getCantidadSolicitada());
-            if (lote.getCantidad() == 0.0) {
-                lote.setEstado("ASIGNADO");
+            if (lote.getCantidad() == 0) {
+                lote.setEstado("AGOTADO");
             }
             loteRepository.save(lote);
 
             Asignacion asignacion = new Asignacion();
-            asignacion.setFechaAsignacion(new Date());
-            asignacion.setEstado("PROGRAMADA");
             asignacion.setSolicitud(solicitud);
+            asignacion.setFechaAsignacion(new Date());
+            asignacion.setEstado("PENDIENTE");
             asignacionRepository.save(asignacion);
+
+        } else if ("RECHAZADO".equalsIgnoreCase(requestDto.getEstado())) {
+            solicitud.setEstado("RECHAZADO");
+        } else {
+            throw new RuntimeException("Estado no válido. Debe ser APROBADO o RECHAZADO.");
         }
+
+        SolicitudDonacion actualizada = solicitudRepository.save(solicitud);
+        return convertirADto(actualizada);
+    }
+
+    private SolicitudDonacionResponseDto convertirADto(SolicitudDonacion solicitud) {
+        SolicitudDonacionResponseDto dto = new SolicitudDonacionResponseDto();
+        dto.setId(solicitud.getId());
+        dto.setCantidadSolicitada(solicitud.getCantidadSolicitada());
+
+        if (solicitud.getFechaSolicitud() != null) {
+            dto.setFechaSolicitud(solicitud.getFechaSolicitud().toInstant()
+                    .atZone(java.time.ZoneId.systemDefault())
+                    .toLocalDateTime());
+        }
+
+        dto.setEstado(solicitud.getEstado());
+
+        if (solicitud.getLote() != null) {
+            dto.setLoteId(solicitud.getLote().getId());
+            dto.setLoteNombre(solicitud.getLote().getNombre());
+        }
+
+        if (solicitud.getOrganizacion() != null) {
+            dto.setOrganizacionId(solicitud.getOrganizacion().getId());
+            dto.setOrganizacionNombre(solicitud.getOrganizacion().getNombre());
+        }
+
+        return dto;
     }
 }
