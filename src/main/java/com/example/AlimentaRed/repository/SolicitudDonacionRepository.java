@@ -8,7 +8,7 @@ import java.util.List;
 
 @Repository
 public interface SolicitudDonacionRepository extends JpaRepository<SolicitudDonacion, Long> {
-    List<SolicitudDonacion> finByOrganizacionId(Long organizacion);
+    List<SolicitudDonacion> findByOrganizacionId(Long organizacion);
     List<SolicitudDonacion> findByLoteId(Long loteId);
     List<SolicitudDonacion> findByEstado(String estado);
 }

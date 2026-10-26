@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface AsignacionRepository extends JpaRepository<Asignacion, Long> {
-    Optional<Asignacion> finBySolicitudId(Long solicitudId);
+    Optional<Asignacion> findBySolicitudId(Long solicitudId);
 }
