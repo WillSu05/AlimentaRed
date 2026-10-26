@@ -18,17 +18,17 @@ public class AsignacionController {
         this.asignacionService = asignacionService;
     }
 
-    @GetMapping
+    @GetMapping("/listarAsignaciones")
     public ResponseEntity<List<Asignacion>> listarAsignaciones() {
         return ResponseEntity.ok(asignacionService.listarAsignaciones());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/buscarAsignacion/{id}")
     public ResponseEntity<Asignacion> obtenerPorId(@PathVariable Long id) {
         return ResponseEntity.ok(asignacionService.obtenerPorId(id));
     }
 
-    @PostMapping
+    @PostMapping("/guardarAsignacion")
     public ResponseEntity<Asignacion> guardarAsignacion(@RequestBody Asignacion asignacion) {
         Asignacion nuevaAsignacion = asignacionService.guardarAsignacion(asignacion);
         return new ResponseEntity<>(nuevaAsignacion, HttpStatus.CREATED);

@@ -19,7 +19,7 @@ public class LoteAlimentoController {
         this.loteService = loteService;
     }
 
-    @PostMapping
+    @PostMapping("/publicarLote")
     public ResponseEntity<LoteAlimentoResponseDto> publicarLote(@RequestBody LoteAlimentoRequestDto requestDto) {
         LoteAlimentoResponseDto nuevoLote = loteService.publicarLote(requestDto);
         return new ResponseEntity<>(nuevoLote, HttpStatus.CREATED);
@@ -31,7 +31,7 @@ public class LoteAlimentoController {
         return ResponseEntity.ok(lotes);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/buscarLote/{id}")
     public ResponseEntity<LoteAlimentoResponseDto> obtenerPorId(@PathVariable Long id) {
         LoteAlimentoResponseDto lote = loteService.obtenerLotePorId(id);
         return ResponseEntity.ok(lote);
