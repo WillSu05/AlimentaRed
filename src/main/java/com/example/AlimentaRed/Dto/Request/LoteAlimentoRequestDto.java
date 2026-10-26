@@ -13,7 +13,7 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoteAlimentoRequest {
+public class LoteAlimentoRequestDto {
     @NotBlank(message = "El nombre del lote es obligatorio")
     private String nombre;
 
