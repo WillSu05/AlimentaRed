@@ -3,8 +3,11 @@ package com.example.AlimentaRed.controller;
 import com.example.AlimentaRed.Dto.Response.UsuarioResponseDto;
 import com.example.AlimentaRed.Entity.Usuario;
 import com.example.AlimentaRed.service.UsuarioService;
+import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,5 +36,17 @@ public class UsuarioController {
     @GetMapping("/buscarUsuario/{id}")
     public ResponseEntity<UsuarioResponseDto> obtenerPorId(@PathVariable Long id) {
         return ResponseEntity.ok(usuarioService.obtenerPorId(id));
+    }
+    @GetMapping("/me")
+    public ResponseEntity<UsuarioResponseDto> obtenerPerfilAutenticado(@AuthenticationPrincipal UserDetails userDetails) {
+        if (userDetails == null) {
+            throw new RuntimeException("No se encontró un usuario autenticado en la sesión");
+        }
+
+        // userDetails.getUsername() retorna el email (que configuramos como identificador en el login)
+        String emailUsuario = userDetails.getUsername();
+
+        UsuarioResponseDto perfil = usuarioService.obtenerPerfilPorEmail(emailUsuario);
+        return ResponseEntity.ok(perfil);
     }
 }

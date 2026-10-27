@@ -8,4 +8,5 @@ public interface UsuarioService {
     Usuario registrarUsuario(Usuario usuario);
     UsuarioResponseDto obtenerPorId(Long id);
     List<UsuarioResponseDto> listarUsuarios();
+    UsuarioResponseDto obtenerPerfilPorEmail(String email);
 }

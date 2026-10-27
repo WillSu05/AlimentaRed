@@ -2,6 +2,7 @@ package com.example.AlimentaRed.service.Impl;
 
 import com.example.AlimentaRed.Dto.Response.UsuarioResponseDto;
 import com.example.AlimentaRed.Entity.Usuario;
+import com.example.AlimentaRed.exception.ResourceNotFoundException;
 import com.example.AlimentaRed.repository.UsuarioRepository;
 import com.example.AlimentaRed.service.UsuarioService;
 import org.springframework.stereotype.Service;
@@ -42,6 +43,24 @@ public class UsuarioServiceImpl implements UsuarioService {
         return usuarioRepository.findAll().stream()
                 .map(this::mapearADto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UsuarioResponseDto obtenerPerfilPorEmail(String email) {
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con el correo: " + email));
+
+        return mapearAResponseDto(usuario);
+    }
+
+    private UsuarioResponseDto mapearAResponseDto(Usuario usuario) {
+        UsuarioResponseDto dto = new UsuarioResponseDto();
+        dto.setId(usuario.getId());
+        dto.setNombre(usuario.getNombre());
+        dto.setEmail(usuario.getEmail());
+        dto.setRol(usuario.getRol());
+        return dto;
     }
 
     private UsuarioResponseDto mapearADto(Usuario usuario) {
