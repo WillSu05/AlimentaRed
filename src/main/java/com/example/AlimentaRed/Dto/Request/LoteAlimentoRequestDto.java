@@ -1,5 +1,6 @@
 package com.example.AlimentaRed.Dto.Request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -26,6 +27,7 @@ public class LoteAlimentoRequestDto {
 
     @NotNull(message = "La fecha límite de consumo es obligatoria")
     @Future(message = "La fecha límite debe ser posterior a la fecha actual")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     private Date fechaLimite;
 
     @NotNull(message = "La categoría del alimento es obligatoria")
