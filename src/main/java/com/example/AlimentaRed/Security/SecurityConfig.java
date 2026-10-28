@@ -27,11 +27,10 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        // Rutas públicas transversales (Auth y Swagger)
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/usuarios/registrarUsuario").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/api/health").permitAll()
-                        // Todas las demás rutas requieren autenticación
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
