@@ -1,5 +1,6 @@
 package com.example.AlimentaRed.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,6 +23,7 @@ public class CategoriaAlimento {
 
     private String descripcion;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "categoria", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<LoteAlimento> lotes;
 }
