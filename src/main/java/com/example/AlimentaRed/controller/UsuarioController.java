@@ -37,16 +37,4 @@ public class UsuarioController {
     public ResponseEntity<UsuarioResponseDto> obtenerPorId(@PathVariable Long id) {
         return ResponseEntity.ok(usuarioService.obtenerPorId(id));
     }
-    @GetMapping("/me")
-    public ResponseEntity<UsuarioResponseDto> obtenerPerfilAutenticado(@AuthenticationPrincipal UserDetails userDetails) {
-        if (userDetails == null) {
-            throw new RuntimeException("No se encontró un usuario autenticado en la sesión");
-        }
-
-        // userDetails.getUsername() retorna el email (que configuramos como identificador en el login)
-        String emailUsuario = userDetails.getUsername();
-
-        UsuarioResponseDto perfil = usuarioService.obtenerPerfilPorEmail(emailUsuario);
-        return ResponseEntity.ok(perfil);
-    }
 }
